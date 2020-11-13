@@ -6,10 +6,10 @@ I have a laptop, and that laptop has a limited battery life. Luckily linux has a
 I couldn't figure out how to pass in command line options so the only way to change it is in the code and then to compile it again.
 # Compiling
 - get the dependencies
-**sudo apt-get install libncurses5-dev libncursesw5-dev g++**`
+`sudo apt-get install libncurses5-dev libncursesw5-dev g++`
 - compile the code
-**git clone https://github.com/StratusFearMe21/fifteen.cpp.git**
-**cd fifteen**
-**g++ fifteen.cpp -lncursesw -o fifteen**
+`git clone https://github.com/StratusFearMe21/fifteen.cpp.git`
+`cd fifteen`
+`g++ fifteen.cpp -lncursesw -o fifteen`
 # Running
-**./fifteen**
+`./fifteen`
