@@ -6,16 +6,21 @@
 #include <random>
 #include <vector>
 
-const int sizex = 5;
-const int sizey = 5;
-int arr[sizey*sizex];
-int n = sizeof(arr)/sizeof(arr[0]);
-int k;
+bool isMultipleof (int n, int mult)  
+{  
+	while ( n > 0 )  
+		n = n - mult;  
+	
+	if ( n == 0 )  
+		return false;  
+	
+	return true;  
+}  
 
-void refreshboard()
+void refreshboard(int sizey, int sizex, int * arr, int moves)
 {
 	printw("╭");
-	for(int i=0;i<sizey-1;i++)
+	for(int i=0;i<sizex-1;i++)
 	{
 		printw("──┬");
 	}
@@ -38,7 +43,7 @@ void refreshboard()
 		printw("│  ");
 	}
 	printw("\n╰");
-	for(int i=0;i<sizey-1;i++)
+	for(int i=0;i<sizex-1;i++)
 	{
 		printw("──┴");
 	}
@@ -56,20 +61,18 @@ void refreshboard()
 			xcount++;
 		}
 	}
+	move(sizey*2+1, 0);
+	printw("Moves: %d", moves);
 }
-/*
-const string lcorner = "╭";
-const string rcorner = "╮";
-const string flat = "─";
-const string t = "┬";
-const string upt = "┴";
-const string cross = "┼";
-const string ulcorner;
-const string urcorner;
-*/
 
-int main()
+int main(int argc, char ** argv)
 {
+	const int sizey = 4;
+	const int sizex = 4;
+	int arr[sizey*sizex];
+	int moves = 0;
+	int n = sizeof(arr)/sizeof(arr[0]);
+	int k;
 	setlocale(LC_ALL, "");
 	initscr();
 	cbreak();
@@ -80,10 +83,51 @@ int main()
 	{
 		arr[i] = i;
 	}
-	std::random_device rd;
-  	std::mt19937 g(rd());
-	std::shuffle(std::begin(arr), std::end(arr), g);
-	refreshboard();
+	std::swap(arr[0], arr[15]);
+	srand(time(NULL));
+	for(int i=0;i<10000;i++)
+	{
+		switch (rand() % 4+1)
+		{
+			case 1:
+			{
+			int *itr = std::find(arr, arr + n, 0);
+			if(std::distance(arr, itr) <= 12)
+			{
+				std::swap(arr[std::distance(arr, itr)], arr[std::distance(arr, itr) + sizex]);
+			}
+			}
+			break;
+			case 2:
+			{
+			int *itr = std::find(arr, arr + n, 0);
+			if(std::distance(arr, itr) >= 4)
+			{
+				std::swap(arr[std::distance(arr, itr)], arr[std::distance(arr, itr) - sizex]);
+			}
+			}
+			break;
+			case 3:
+			{
+			int *itr = std::find(arr, arr + n, 0);
+			if(isMultipleof(std::distance(arr, itr)+1, sizex))
+			{
+				std::swap(arr[std::distance(arr, itr)], arr[std::distance(arr, itr) + 1]);
+			}
+			}
+			break;
+			case 4:
+			{
+			int *itr = std::find(arr, arr + n, 0);
+			if(isMultipleof(std::distance(arr, itr), sizex))
+			{
+				std::swap(arr[std::distance(arr, itr)], arr[std::distance(arr, itr) - 1]);
+			}
+			}
+			break;
+		}
+	}
+	refreshboard(sizey, sizex, arr, moves);
 	refresh();
 	while (1)
 	{
@@ -91,39 +135,59 @@ int main()
 		switch (k)
 		{
 			case 'w':
+			case 259:
 			{
 			int *itr = std::find(arr, arr + n, 0);
-			std::swap(arr[std::distance(arr, itr)], arr[std::distance(arr, itr) + sizex]);
-			erase();
-			refreshboard();
-			refresh();
+			if(std::distance(arr, itr) <= 12)
+			{
+				std::swap(arr[std::distance(arr, itr)], arr[std::distance(arr, itr) + sizex]);
+				moves += 1;
+				erase();
+				refreshboard(sizey, sizex, arr, moves);
+				refresh();
+			}
 			}
 			break;
 			case 's':
+			case 258:
 			{
 			int *itr = std::find(arr, arr + n, 0);
-			std::swap(arr[std::distance(arr, itr)], arr[std::distance(arr, itr) - sizex]);
-			erase();
-			refreshboard();
-			refresh();
+			if(std::distance(arr, itr) >= 4)
+			{
+				std::swap(arr[std::distance(arr, itr)], arr[std::distance(arr, itr) - sizex]);
+				moves += 1;
+				erase();
+				refreshboard(sizey, sizex, arr, moves);
+				refresh();
+			}
 			}
 			break;
 			case 'a':
+			case 260:
 			{
 			int *itr = std::find(arr, arr + n, 0);
-			std::swap(arr[std::distance(arr, itr)], arr[std::distance(arr, itr) + 1]);
-			erase();
-			refreshboard();
-			refresh();
+			if(isMultipleof(std::distance(arr, itr)+1, sizex))
+			{
+				std::swap(arr[std::distance(arr, itr)], arr[std::distance(arr, itr) + 1]);
+				moves += 1;
+				erase();
+				refreshboard(sizey, sizex, arr, moves);
+				refresh();
+			}
 			}
 			break;
 			case 'd':
+			case 261:
 			{
 			int *itr = std::find(arr, arr + n, 0);
+			if(isMultipleof(std::distance(arr, itr), sizex))
+			{
 			std::swap(arr[std::distance(arr, itr)], arr[std::distance(arr, itr) - 1]);
+			moves += 1;
 			erase();
-			refreshboard();
+			refreshboard(sizey, sizex, arr, moves);
 			refresh();
+			}
 			}
 			break;
 			case 'q':
